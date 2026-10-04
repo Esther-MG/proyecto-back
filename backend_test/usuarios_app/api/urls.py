@@ -7,6 +7,7 @@ EncuestaAV, Respuesta1AV, Respuesta1View, TestView, SeccionView, PreguntaView, O
 UserSectionResponsesView, PreguntaIppView, PreguntaIPPDetails, OpcionIppView, Respuesta2AV, Respuesta2View,
 UserSectionSumView, PreguntaHSPQList, PreguntaHSPQDetails, OpcionHspqView, OpcionHspqDetailAV, Respuesta3AV, Respuesta3View, UserSectionSumViewHspq,
 UserTestResultsTotal,Conversion, ResultSegundoOrden)
+from usuarios_app.api.hspq_report import HspqReportDataView, HspqReportPdfView
 from rest_framework.routers import DefaultRouter
 
 
@@ -57,5 +58,7 @@ urlpatterns = [
     path('viewHspq/<int:pk>', Respuesta3View.as_view(), name='respuesta3-list'),
     path('user/<int:user_id>/section_sumHspq/', UserSectionSumViewHspq.as_view(), name='user-section-sumHspq'),
     path('resultSegundo/<int:user_id>/', ResultSegundoOrden.as_view(), name='resultSegundo'),
+    path('hspq/report/<int:user_id>/', HspqReportDataView.as_view(), name='hspq-report-data'),
+    path('hspq/report/<int:user_id>/pdf/', HspqReportPdfView.as_view(), name='hspq-report-pdf'),
 
 ]
