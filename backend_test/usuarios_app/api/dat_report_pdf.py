@@ -22,9 +22,10 @@ RIGHT_MARGIN = 16 * mm
 CONTENT_WIDTH = PAGE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN
 
 FINAL_NOTE = (
-    "Este informe presenta el puntaje directo y el centil de la Tabla 42 "
-    "(2.º Bachillerato). Debe ser interpretado por un profesional. "
-    "No constituye un diagnóstico. La conversión 1–99 del sistema no se usa como centil."
+    "Este informe presenta el puntaje directo y el centil de la Plantilla de Baremos escolares. "
+    "Debe ser interpretado por un profesional e integrado después con otros antecedentes. "
+    "No constituye un diagnóstico ni recomienda opciones vocacionales. "
+    "La conversión 1–99 del sistema no se usa como centil."
 )
 
 
@@ -89,7 +90,7 @@ def _data_table(headers, rows):
     styles = _styles()
     header = [Paragraph(escape(text), styles['header_cell']) for text in headers]
     data = [header] + rows
-    widths = [16 * mm, 62 * mm, 32 * mm, 22 * mm, CONTENT_WIDTH - 132 * mm]
+    widths = [22 * mm, CONTENT_WIDTH - 82 * mm, 36 * mm, 24 * mm]
     table = Table(data, colWidths=widths, repeatRows=1)
     commands = [
         ('BACKGROUND', (0, 0), (-1, 0), NAVY),
@@ -216,10 +217,9 @@ def generate_dat_pdf(report_data):
         Paragraph(_text(item.get('nombre')), styles['cell']),
         Paragraph(_text(item.get('puntaje_directo')), styles['cell']),
         Paragraph(_text(item.get('centil')), styles['cell']),
-        Paragraph(_text(item.get('observacion')), styles['cell']),
     ] for item in subtests]
     if not rows:
-        rows = [[Paragraph('No disponible', styles['cell'])] * 5]
+        rows = [[Paragraph('No disponible', styles['cell'])] * 4]
 
     notes = '<br/>'.join(_text(note) for note in (report.get('notas') or []) if note)
     warnings = report.get('advertencias') or []
@@ -247,12 +247,12 @@ def generate_dat_pdf(report_data):
         ]),
         Paragraph('3. Resultados', styles['section']),
         _data_table(
-            ['Código', 'Subtest', 'Puntaje directo', 'Centil', 'Tabla 42'],
+            ['Código', 'Subtest', 'Puntaje directo', 'Centil'],
             rows,
         ),
         Paragraph('4. Perfil de centiles', styles['section']),
         Paragraph(
-            'Cada punto es el centil de la Tabla 42. No es la conversión 1–99 del sistema.',
+            'Cada punto es el centil de la Plantilla de Baremos escolares. No es la conversión 1–99 del sistema.',
             styles['small'],
         ),
         Spacer(1, 4),
@@ -265,9 +265,9 @@ def generate_dat_pdf(report_data):
         Paragraph(_text(profile.get('areas_menores')), styles['small']),
         Paragraph('8. Síntesis', styles['section']),
         Paragraph(_text(profile.get('sintesis')), styles['small']),
-        Paragraph('9. Orientación', styles['section']),
-        Paragraph(_text(profile.get('recomendaciones')), styles['small']),
-        Paragraph('10. Nota', styles['section']),
+        Paragraph('9. Lectura del perfil DAT', styles['section']),
+        Paragraph(_text(profile.get('lectura')), styles['small']),
+        Paragraph('10. Consideraciones profesionales', styles['section']),
         Paragraph(FINAL_NOTE, styles['note']),
         Spacer(1, 4),
         Paragraph(notes or 'No disponible', styles['note']),

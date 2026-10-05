@@ -5,14 +5,25 @@
 DAT_TEST_ID = 1
 REPORT_VIEWER_GROUPS = ['Administrador']
 
-BAREMO_FUENTE = 'Tabla 42. Baremos de escolares, varones y mujeres — 2.º Bachillerato'
+BAREMO_FUENTE = 'Plantilla de Baremos escolares'
 BAREMO_NOTA_SEXO = (
-    'En la Tabla 42 de 2.º Bachillerato estas siete columnas no están separadas por sexo. '
+    'La plantilla aplicada no separa estas siete columnas por sexo. '
     'Se usa la misma equivalencia para el puntaje directo.'
 )
 NO_CONVERSION_NOTE = (
-    'El centil no es la conversión 1-99 del sistema. Sale solo de la Tabla 42.'
+    'El centil no es la conversión 1-99 del sistema. Sale de la Plantilla de Baremos escolares.'
 )
+
+# Significado de cada aptitud del DAT. No es un nivel ni una recomendación.
+APTITUD_SIGNIFICADO = {
+    'VR': 'manejo de conceptos y relaciones expresadas con palabras',
+    'NR': 'relaciones y operaciones numéricas',
+    'AR': 'identificación de patrones no verbales',
+    'MR': 'comprensión de principios físicos y mecánicos',
+    'SR': 'visualización de formas y posiciones en el espacio',
+    'OR': 'reconocimiento de la forma escrita correcta',
+    'PSA': 'comparación visual rápida y precisa',
+}
 
 SUBTESTS = (
     (1, 'VR'),
@@ -108,14 +119,14 @@ def lookup_centil(code, raw_score):
     except (TypeError, ValueError):
         return None, 'Puntaje directo no numérico.'
     if score != raw_score:
-        return None, 'La Tabla 42 no define centil para un puntaje no entero.'
+        return None, 'La plantilla no define centil para un puntaje no entero.'
     matches = [
         centil for centil, low, high in TABLA_42.get(code, ())
         if low <= score <= high
     ]
     if len(matches) == 1:
-        return matches[0], 'Equivalencia exacta de la Tabla 42.'
+        return matches[0], 'Equivalencia de la plantilla.'
     if len(matches) > 1:
-        return None, 'El puntaje aparece en más de una celda de la Tabla 42.'
-    return None, 'El puntaje directo no aparece en la Tabla 42.'
+        return None, 'El puntaje aparece en más de una celda de la plantilla.'
+    return None, 'El puntaje directo no aparece en la plantilla.'
 
