@@ -3,7 +3,7 @@ from xml.sax.saxutils import escape
 
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT
-from reportlab.lib.pagesizes import A4
+from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
 from reportlab.platypus import (
@@ -17,7 +17,7 @@ MUTED = colors.HexColor('#5B6770')
 ROW_ALT = colors.HexColor('#F7F9FB')
 PR_COLOR = MUTED
 
-PAGE_WIDTH, PAGE_HEIGHT = A4
+PAGE_WIDTH, PAGE_HEIGHT = LETTER
 LEFT_MARGIN = 16 * mm
 RIGHT_MARGIN = 16 * mm
 CONTENT_WIDTH = PAGE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN
@@ -299,7 +299,7 @@ def generate_ipp_pdf(report_data):
     ]
     buffer = io.BytesIO()
     document = SimpleDocTemplate(
-        buffer, pagesize=A4,
+        buffer, pagesize=LETTER,
         leftMargin=LEFT_MARGIN, rightMargin=RIGHT_MARGIN,
         topMargin=16 * mm, bottomMargin=16 * mm,
         title='Informe de resultados IPP',
