@@ -1,4 +1,7 @@
 from django.apps import apps
+from django.db.models import Count
+from django.db.models.functions import ExtractMonth, ExtractYear
+from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -55,3 +58,63 @@ class AdminHomeStatsView(APIView):
         if not puede_ver_home_admin(request.user):
             return Response({'detail': 'No autorizado.'}, status=403)
         return Response(build_admin_home_stats())
+
+
+MESES = (
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+)
+
+
+def anios_disponibles():
+    filas = (
+        User.objects.annotate(anio=ExtractYear('date_joined'))
+        .values('anio')
+        .annotate(total=Count('id'))
+        .order_by('anio')
+    )
+    return [fila['anio'] for fila in filas if fila['anio'] is not None]
+
+
+def registros_por_mes(year):
+    filas = (
+        User.objects.filter(date_joined__year=year)
+        .annotate(mes=ExtractMonth('date_joined'))
+        .values('mes')
+        .annotate(total=Count('id'))
+    )
+    totales = {fila['mes']: fila['total'] for fila in filas}
+    return [
+        {
+            'month': mes,
+            'month_name': MESES[mes - 1],
+            'total': totales.get(mes, 0),
+        }
+        for mes in range(1, 13)
+    ]
+
+
+class AdminHomeRegistrationsView(APIView):
+    authentication_classes = [HspqReportJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if not puede_ver_home_admin(request.user):
+            return Response({'detail': 'No autorizado.'}, status=403)
+
+        bruto = request.query_params.get('year')
+        if bruto in (None, ''):
+            year = timezone.now().year
+        else:
+            try:
+                year = int(bruto)
+            except (TypeError, ValueError):
+                return Response({'detail': 'El año no es válido.'}, status=400)
+            if year < 1:
+                return Response({'detail': 'El año no es válido.'}, status=400)
+
+        return Response({
+            'year': year,
+            'available_years': anios_disponibles(),
+            'monthly_registrations': registros_por_mes(year),
+        })
