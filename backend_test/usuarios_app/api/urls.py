@@ -11,6 +11,7 @@ from usuarios_app.api.hspq_report import HspqReportDataView, HspqReportPdfView
 from usuarios_app.api.dat_report import DatReportPdfView
 from usuarios_app.api.ipp_report import IppReportPdfView
 from usuarios_app.api.general_report import GeneralReportDataView, GeneralReportPdfView
+from usuarios_app.api.admin_home_stats import AdminHomeStatsView
 from rest_framework.routers import DefaultRouter
 
 
@@ -67,5 +68,6 @@ urlpatterns = [
     path('ipp/report/<int:user_id>/pdf/', IppReportPdfView.as_view(), name='ipp-report-pdf'),
     path('general-report/<int:user_id>/', GeneralReportDataView.as_view(), name='general-report-data'),
     path('general-report/<int:user_id>/pdf/', GeneralReportPdfView.as_view(), name='general-report-pdf'),
+    path('admin/home/', AdminHomeStatsView.as_view(), name='admin-home-stats'),
 
 ]
