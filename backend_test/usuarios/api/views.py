@@ -54,7 +54,7 @@ def logout_view(request):
     if request.method == 'POST':
         request.user.auth_token.delete()
         return Response(status=status.HTTP_200_OK)
-        
+
 @api_view(['POST',])
 def registration_view(request):
     if request.method == 'POST':
@@ -82,10 +82,10 @@ def registration_view(request):
             data['test7'] = account.test7
             data['test8'] = account.test8
             data['test9'] = account.test9
-            
-            admin_group = Group.objects.get(name='Estudiante')  
+
+            admin_group = Group.objects.get(name='Estudiante')
             admin_group.user_set.add(account)
-            
+
             refresh = RefreshToken.for_user(account)
             data['token'] = {
                 'refresh': str(refresh),
@@ -93,9 +93,9 @@ def registration_view(request):
             }
         else:
             data = serializer.errors
-            
+
         return Response(data)
-    
+
 @api_view(['POST',])
 def registration_admin_view(request):
     if request.method == 'POST':
@@ -111,30 +111,70 @@ def registration_admin_view(request):
             data['edad'] = account.edad
             data['sexo'] = account.sexo
             data['email'] = account.email
-            
-            admin_group = Group.objects.get(name='Administrador') 
+
+            admin_group = Group.objects.get(name='Administrador')
             admin_group.user_set.add(account)
-            
+
             refresh = RefreshToken.for_user(account)
             data['token'] = {
                 'refresh': str(refresh),
                 'access': str(refresh.access_token)
             }
-            
+
         else:
             data = serializer.errors
-            
+
         return Response(data)
-            
-            
-@api_view(['POST',])
-def login_view(request):
+
+
+@api_view(['POST'])
+def admin_login_view(request):
     data = {}
     if request.method == 'POST':
         username = request.data.get('username')
-        password = request.data.get('password')  
+        password = request.data.get('password')
+        account = auth.authenticate(username=username, password=password)
+
+        if account is not None:
+            is_admin = account.groups.filter(name='Administrador').exists()
+
+            if not is_admin:
+                data['error'] = 'El usuario no es un administrador'
+                return Response(data, status=status.HTTP_403_FORBIDDEN)
+
+            data['response'] = 'Login existoso'
+            data['id'] = account.id
+            data['username'] = account.username
+            data['first_name'] = account.first_name
+            data['last_name'] = account.last_name
+
+            refresh = RefreshToken.for_user(account)
+            data['token'] = {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token)
+            }
+            return Response(data)
+        else:
+            data['error'] = 'Credenciales incorrectas'
+            return Response(data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST', ])
+def user_login_view(request):
+    data = {}
+    if request.method == 'POST':
+        username = request.data.get('username')
+        password = request.data.get('password')
         account = auth.authenticate(username=username, password=password)
         if account is not None:
+
+            is_admin = account.groups.filter(name='Administrador').exists()
+            is_student = account.groups.filter(name='Estudiante').exists()
+
+            if not is_admin and not is_student:
+                data['error'] = 'El usuario no tiene un rol asignado'
+                return Response(data, status=status.HTTP_403_FORBIDDEN)
+
             data['response'] = 'Login successful'
             data['id'] = account.id
             data['username'] = account.username
