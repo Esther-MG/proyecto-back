@@ -118,19 +118,3 @@ class AdminHomeRegistrationsView(APIView):
             'available_years': anios_disponibles(),
             'monthly_registrations': registros_por_mes(year),
         })
-
-
-def build_psicologo_home_stats():
-    return {
-        'total_estudiantes': contar_usuarios_en_grupo(GRUPO_ESTUDIANTE),
-    }
-
-
-class PsicologoHomeStatsView(APIView):
-    authentication_classes = [HspqReportJWTAuthentication]
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        if not puede_ver_home_admin(request.user):
-            return Response({'detail': 'No autorizado.'}, status=403)
-        return Response(build_psicologo_home_stats())

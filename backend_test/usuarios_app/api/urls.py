@@ -11,9 +11,8 @@ from usuarios_app.api.hspq_report import HspqReportDataView, HspqReportPdfView
 from usuarios_app.api.dat_report import DatReportPdfView
 from usuarios_app.api.ipp_report import IppReportPdfView
 from usuarios_app.api.general_report import GeneralReportDataView, GeneralReportPdfView
-from usuarios_app.api.admin_home_stats import (
-    AdminHomeStatsView, AdminHomeRegistrationsView, PsicologoHomeStatsView,
-)
+from usuarios_app.api.admin_home_stats import AdminHomeStatsView, AdminHomeRegistrationsView
+from usuarios_app.api.psi_home import PsicologoHomeStatsView
 from rest_framework.routers import DefaultRouter
 
 
