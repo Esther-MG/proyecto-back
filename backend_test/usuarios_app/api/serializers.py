@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from usuarios_app.models import (usuario, tipo_usuario,tutor, test, seccion, pregunta_sa,
-opcion_sa, encuesta, respuesta1, pregunta_ipp, opcion_ipp, respuesta2, pregunta_hspq, opcion_hspq, respuesta3)
+opcion_sa, encuesta, respuesta1, pregunta_ipp, opcion_ipp, respuesta2, pregunta_hspq, opcion_hspq, respuesta3,
+tipo_test, seccion_nuevo, pregunta_nuevo, opcion_nuevo, respuesta_nuevo, opcion_multiple)
 from usuarios.models import User
 from django.contrib.auth.models import Group
 
@@ -93,6 +94,36 @@ class OpcionHSPQSerializer(serializers.ModelSerializer):
 class Respuesta3Serializer(serializers.ModelSerializer):
     class Meta:
         model = respuesta3
+        fields = "__all__"
+
+class TipoTestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = tipo_test
+        fields = "__all__"
+
+class SeccionNuevaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = seccion_nuevo
+        fields = "__all__"
+
+class PreguntaNuevaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = pregunta_nuevo
+        fields = "__all__"
+
+class OpcionNuevoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = opcion_nuevo
+        fields = "__all__"
+
+class RespuestaNuevoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = respuesta_nuevo
+        fields = "__all__"
+
+class OpcionMultipleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = opcion_multiple
         fields = "__all__"
 
 # class UsuarioSerializer(serializers.Serializer):

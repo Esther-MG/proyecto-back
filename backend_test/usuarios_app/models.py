@@ -56,6 +56,7 @@ class test (models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=200)
     instruccion = models.TextField(blank=True)
+    editable = models.BooleanField(default=False)
     
     def __str__(self):
         return self.nombre
@@ -68,6 +69,64 @@ class seccion (models.Model):
     
     def __str__(self):
         return self.nombre
+
+class tipo_test(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.nombre
+
+class seccion_nuevo(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=200)
+    instruccion = models.TextField(blank=True)
+    tipo_test_id = models.ForeignKey(tipo_test, on_delete=models.CASCADE)
+    test_id = models.ForeignKey(test, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.nombre
+
+class pregunta_nuevo(models.Model):
+    id = models.AutoField(primary_key=True)
+    nro_pregunta = models.IntegerField()
+    texto_pregunta = models.CharField(max_length=200)
+    imagen = models.CharField(blank=True, max_length=900)
+    seccion_id = models.ForeignKey(seccion_nuevo, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.texto_pregunta
+
+class opcion_nuevo(models.Model):
+    id = models.AutoField(primary_key=True)
+    inciso = models.CharField(max_length=50)
+    respuesta = models.CharField(max_length=200)
+    valor = models.BooleanField(default=False)
+    varias_opciones = models.BooleanField(default=False)
+    pregunta_id = models.ForeignKey(pregunta_nuevo, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.respuesta
+
+class respuesta_nuevo(models.Model):
+    id = models.AutoField(primary_key=True)
+    id_test = models.IntegerField()
+    id_seccion = models.IntegerField()
+    valor = models.IntegerField()
+    texto = models.CharField(max_length=200)
+    pregunta_id = models.ForeignKey(pregunta_nuevo, on_delete=models.CASCADE)
+    usuario_id = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.id)
+
+class opcion_multiple(models.Model):
+    id = models.AutoField(primary_key=True)
+    respuesta_id = models.ForeignKey(respuesta_nuevo, on_delete=models.CASCADE)
+    opcion_id = models.ForeignKey(opcion_nuevo, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.id)
     
 class pregunta_sa(models.Model):
     id = models.AutoField(primary_key=True)

@@ -91,9 +91,9 @@ AUTH_USER_MODEL = 'usuarios.User'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "VocationalTest",
+        "NAME": "VocationalTest_2",
         "USER": "postgres",
-        "PASSWORD": "admin",
+        "PASSWORD": "root",
         "HOST": "localhost",
         
     }

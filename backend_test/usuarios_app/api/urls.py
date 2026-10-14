@@ -6,7 +6,10 @@ SeccionDetailAV, PreguntaSADetailAV, OpcionSADetailAV, UserListAV, GroupUsuarioA
 EncuestaAV, Respuesta1AV, Respuesta1View, TestView, SeccionView, PreguntaView, OpcionView, TestResultsView,
 UserSectionResponsesView, PreguntaIppView, PreguntaIPPDetails, OpcionIppView, Respuesta2AV, Respuesta2View,
 UserSectionSumView, PreguntaHSPQList, PreguntaHSPQDetails, OpcionHspqView, OpcionHspqDetailAV, Respuesta3AV, Respuesta3View, UserSectionSumViewHspq,
-UserTestResultsTotal,Conversion, ResultSegundoOrden)
+UserTestResultsTotal,Conversion, ResultSegundoOrden, TipoTestListCreateAV, TipoTestDetailAV, SeccionNuevaListCreateAV,
+SeccionNuevaDetailAV, PreguntaNuevaListCreateAV, PreguntaNuevaDetailAV, OpcionNuevoListCreateAV,
+OpcionNuevoDetailAV, RespuestaNuevoListCreateAV, RespuestaNuevoDetailAV, OpcionMultipleListCreateAV,
+OpcionMultipleDetailAV)
 from usuarios_app.api.hspq_report import HspqReportDataView, HspqReportPdfView
 from usuarios_app.api.dat_report import DatReportPdfView
 from usuarios_app.api.ipp_report import IppReportPdfView
@@ -14,7 +17,6 @@ from usuarios_app.api.general_report import GeneralReportDataView, GeneralReport
 from usuarios_app.api.admin_home_stats import AdminHomeStatsView, AdminHomeRegistrationsView
 from usuarios_app.api.psi_home import PsicologoHomeStatsView
 from rest_framework.routers import DefaultRouter
-
 
 # router = DefaultRouter()
 #router.register('usuarios', UsuarioListVS, basename='usuarios' )
@@ -72,5 +74,24 @@ urlpatterns = [
     path('admin/home/', AdminHomeStatsView.as_view(), name='admin-home-stats'),
     path('admin/home/registrations/', AdminHomeRegistrationsView.as_view(), name='admin-home-registrations'),
     path('psicologo/home/', PsicologoHomeStatsView.as_view(), name='psicologo-home-stats'),
+
+    # Nuevos test
+    path('tipo-test/', TipoTestListCreateAV.as_view(), name='tipo-test-list-create'),
+    path('tipo-test/<int:pk>/', TipoTestDetailAV.as_view(), name='tipo-test-detail'),
+
+    path('seccion-nueva/', SeccionNuevaListCreateAV.as_view(), name='seccion-nueva-list-create'),
+    path('seccion-nueva/<int:pk>/', SeccionNuevaDetailAV.as_view(), name='seccion-nueva-detail'),
+
+    path('pregunta-nueva/', PreguntaNuevaListCreateAV.as_view(), name='pregunta-nueva-list-create'),
+    path('pregunta-nueva/<int:pk>/', PreguntaNuevaDetailAV.as_view(), name='pregunta-nueva-detail'),
+
+    path('opcion-nuevo/', OpcionNuevoListCreateAV.as_view(), name='opcion-nuevo-list-create'),
+    path('opcion-nuevo/<int:pk>/', OpcionNuevoDetailAV.as_view(), name='opcion-nuevo-detail'),
+
+    path('respuesta-nuevo/', RespuestaNuevoListCreateAV.as_view(), name='respuesta-nuevo-list-create'),
+    path('respuesta-nuevo/<int:pk>/', RespuestaNuevoDetailAV.as_view(), name='respuesta-nuevo-detail'),
+
+    path('opcion-multiple/', OpcionMultipleListCreateAV.as_view(), name='opcion-multiple-list-create'),
+    path('opcion-multiple/<int:pk>/', OpcionMultipleDetailAV.as_view(), name='opcion-multiple-detail')
 
 ]

@@ -1,11 +1,14 @@
+from django.db.migrations import serializer
 from usuarios_app.models import (usuario, tipo_usuario, tutor, test, seccion, pregunta_sa, opcion_sa, encuesta,
-respuesta1, pregunta_ipp, opcion_ipp, respuesta2, pregunta_hspq, opcion_hspq, respuesta3)
+respuesta1, pregunta_ipp, opcion_ipp, respuesta2, pregunta_hspq, opcion_hspq, respuesta3, tipo_test, seccion_nuevo, pregunta_nuevo,
+opcion_nuevo, respuesta_nuevo, opcion_multiple)
 from usuarios.models import User
 from django.contrib.auth.models import Group
 from usuarios_app.api.serializers import (UsuarioSerializer, TipoUsuarioSerializer, TutorSerializer,
 TestSerializer, SeccionSerializer, PreguntaSASerializer, OpcionSASerializer, UserSerializer,GroupsSerializer,
 UserGroupSerializer, EncuestaSerializer, Respuesta1Serializer, PreguntaIPPSerializer, OpcionIPPSerializer, Respuesta2Serializer,
-PreguntaHSPQSerializer, OpcionHSPQSerializer, Respuesta3Serializer)
+PreguntaHSPQSerializer, OpcionHSPQSerializer, Respuesta3Serializer, TipoTestSerializer, SeccionNuevaSerializer, PreguntaNuevaSerializer,
+OpcionMultipleSerializer, OpcionNuevoSerializer, RespuestaNuevoSerializer)
 from rest_framework.response import Response
 #from rest_framework.decorators import api_view
 from rest_framework import status
@@ -17,7 +20,6 @@ from django.db import connection
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from django.forms.models import model_to_dict
-
 
 class TipoUsuarioAV(APIView):
     def get(self, request):
@@ -109,16 +111,94 @@ class TutorDetailAV(generics.ListCreateAPIView):
         pk = self.kwargs['pk']
         return tutor.objects.filter(usuario_id=pk)
 
+class TipoTestListCreateAV(generics.ListCreateAPIView):
+    queryset = tipo_test.objects.all()
+    serializer_class = TipoTestSerializer
+
+class TipoTestDetailAV(generics.RetrieveUpdateDestroyAPIView):
+    queryset = tipo_test.objects.all()
+    serializer_class = TipoTestSerializer
+
+
+# SeccionNueva
+class SeccionNuevaListCreateAV(generics.ListCreateAPIView):
+    queryset = seccion_nuevo.objects.all()
+    serializer_class = SeccionNuevaSerializer
+
+class SeccionNuevaDetailAV(generics.RetrieveUpdateDestroyAPIView):
+    queryset = seccion_nuevo.objects.all()
+    serializer_class = SeccionNuevaSerializer
+
+
+# PreguntaNueva
+class PreguntaNuevaListCreateAV(generics.ListCreateAPIView):
+    queryset = pregunta_nuevo.objects.all()
+    serializer_class = PreguntaNuevaSerializer
+
+class PreguntaNuevaDetailAV(generics.RetrieveUpdateDestroyAPIView):
+    queryset = pregunta_nuevo.objects.all()
+    serializer_class = PreguntaNuevaSerializer
+
+# OpcionNuevo
+class OpcionNuevoListCreateAV(generics.ListCreateAPIView):
+    queryset = opcion_nuevo.objects.all()
+    serializer_class = OpcionNuevoSerializer
+
+class OpcionNuevoDetailAV(generics.RetrieveUpdateDestroyAPIView):
+    queryset = opcion_nuevo.objects.all()
+    serializer_class = OpcionNuevoSerializer
+
+
+# RespuestaNuevo
+class RespuestaNuevoListCreateAV(generics.ListCreateAPIView):
+    queryset = respuesta_nuevo.objects.all()
+    serializer_class = RespuestaNuevoSerializer
+
+class RespuestaNuevoDetailAV(generics.RetrieveUpdateDestroyAPIView):
+    queryset = respuesta_nuevo.objects.all()
+    serializer_class = RespuestaNuevoSerializer
+
+
+# OpcionMultiple
+class OpcionMultipleListCreateAV(generics.ListCreateAPIView):
+    queryset = opcion_multiple.objects.all()
+    serializer_class = OpcionMultipleSerializer
+
+class OpcionMultipleDetailAV(generics.RetrieveUpdateDestroyAPIView):
+    queryset = opcion_multiple.objects.all()
+    serializer_class = OpcionMultipleSerializer
+
 class TestView(APIView):
     def get(self, request):
         Test = test.objects.all()
         serializer = TestSerializer(Test, many=True)
         return Response(serializer.data)
-class TestDetailAV(generics.ListCreateAPIView):
-    serializer_class = TestSerializer
-    def get_queryset(self):
-        pk = self.kwargs['pk']
-        return test.objects.filter(id=pk)
+
+    def post(self, request):
+        serializer = TestSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class TestDetailAV(APIView):
+    def get(self, request, pk):
+        try:
+            test_obj = test.objects.get(pk=pk)
+        except test.DoesNotExist:
+            return Response({'error': 'Test no existe'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = TestSerializer(test_obj)
+        return Response(serializer.data)
+    def put(self, request, pk):
+        try:
+            test_obj = test.objects.get(pk=pk)
+        except test.DoesNotExist:
+            return Response({'error': 'Test no existe'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = TestSerializer(test_obj, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SeccionView(APIView):
     def get(self, request):
