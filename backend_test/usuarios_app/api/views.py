@@ -119,16 +119,20 @@ class TipoTestDetailAV(generics.RetrieveUpdateDestroyAPIView):
     queryset = tipo_test.objects.all()
     serializer_class = TipoTestSerializer
 
-
 # SeccionNueva
 class SeccionNuevaListCreateAV(generics.ListCreateAPIView):
     queryset = seccion_nuevo.objects.all()
     serializer_class = SeccionNuevaSerializer
 
+class SeccionNuevaListByTestAV(generics.ListAPIView):
+    serializer_class = SeccionNuevaSerializer
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return seccion_nuevo.objects.filter(test_id=pk).order_by('id')
+
 class SeccionNuevaDetailAV(generics.RetrieveUpdateDestroyAPIView):
     queryset = seccion_nuevo.objects.all()
     serializer_class = SeccionNuevaSerializer
-
 
 # PreguntaNueva
 class PreguntaNuevaListCreateAV(generics.ListCreateAPIView):
@@ -139,15 +143,22 @@ class PreguntaNuevaDetailAV(generics.RetrieveUpdateDestroyAPIView):
     queryset = pregunta_nuevo.objects.all()
     serializer_class = PreguntaNuevaSerializer
 
+class PreguntaNuevaListBySeccionAV(generics.ListAPIView):
+    serializer_class = PreguntaNuevaSerializer
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return pregunta_nuevo.objects.filter(seccion_id=pk).order_by('nro_pregunta')
+
 # OpcionNuevo
 class OpcionNuevoListCreateAV(generics.ListCreateAPIView):
     queryset = opcion_nuevo.objects.all()
     serializer_class = OpcionNuevoSerializer
 
-class OpcionNuevoDetailAV(generics.RetrieveUpdateDestroyAPIView):
-    queryset = opcion_nuevo.objects.all()
+class OpcionNuevoDetailAV(generics.ListAPIView):
     serializer_class = OpcionNuevoSerializer
-
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return opcion_nuevo.objects.filter(pregunta_id=pk).order_by('inciso')
 
 # RespuestaNuevo
 class RespuestaNuevoListCreateAV(generics.ListCreateAPIView):
@@ -199,6 +210,14 @@ class TestDetailAV(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        try:
+            test_obj = test.objects.get(pk=pk)
+        except test.DoesNotExist:
+            return Response({'error': 'Test no existe'}, status=status.HTTP_404_NOT_FOUND)
+        test_obj.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class SeccionView(APIView):
     def get(self, request):

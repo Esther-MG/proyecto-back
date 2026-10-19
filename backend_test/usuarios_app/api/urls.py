@@ -9,7 +9,7 @@ UserSectionSumView, PreguntaHSPQList, PreguntaHSPQDetails, OpcionHspqView, Opcio
 UserTestResultsTotal,Conversion, ResultSegundoOrden, TipoTestListCreateAV, TipoTestDetailAV, SeccionNuevaListCreateAV,
 SeccionNuevaDetailAV, PreguntaNuevaListCreateAV, PreguntaNuevaDetailAV, OpcionNuevoListCreateAV,
 OpcionNuevoDetailAV, RespuestaNuevoListCreateAV, RespuestaNuevoDetailAV, OpcionMultipleListCreateAV,
-OpcionMultipleDetailAV)
+OpcionMultipleDetailAV, SeccionNuevaListByTestAV, PreguntaNuevaListBySeccionAV)
 from usuarios_app.api.hspq_report import HspqReportDataView, HspqReportPdfView
 from usuarios_app.api.dat_report import DatReportPdfView
 from usuarios_app.api.ipp_report import IppReportPdfView
@@ -80,10 +80,12 @@ urlpatterns = [
     path('tipo-test/<int:pk>/', TipoTestDetailAV.as_view(), name='tipo-test-detail'),
 
     path('seccion-nueva/', SeccionNuevaListCreateAV.as_view(), name='seccion-nueva-list-create'),
-    path('seccion-nueva/<int:pk>/', SeccionNuevaDetailAV.as_view(), name='seccion-nueva-detail'),
+    path('seccion-nueva/<int:pk>/', SeccionNuevaListByTestAV.as_view(), name='seccion-nueva-detail'),
+    path('seccion-nueva-id/<int:pk>/', SeccionNuevaDetailAV.as_view(), name='seccion-nueva-list-id'),
 
     path('pregunta-nueva/', PreguntaNuevaListCreateAV.as_view(), name='pregunta-nueva-list-create'),
-    path('pregunta-nueva/<int:pk>/', PreguntaNuevaDetailAV.as_view(), name='pregunta-nueva-detail'),
+    path('pregunta-nueva/<int:pk>/', PreguntaNuevaListBySeccionAV.as_view(), name='pregunta-nueva-detail'),
+    path('pregunta-nueva-id/<int:pk>/', PreguntaNuevaDetailAV.as_view(), name='pregunta-nueva-list-id'),
 
     path('opcion-nuevo/', OpcionNuevoListCreateAV.as_view(), name='opcion-nuevo-list-create'),
     path('opcion-nuevo/<int:pk>/', OpcionNuevoDetailAV.as_view(), name='opcion-nuevo-detail'),
