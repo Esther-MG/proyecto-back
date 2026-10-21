@@ -47,7 +47,9 @@ def puede_ver_home_admin(user):
         return False
     if user.is_staff or user.is_superuser:
         return True
-    return user.groups.filter(name__in=REPORT_VIEWER_GROUPS).exists()
+
+    nombres = {nombre.lower() for nombre in user.groups.values_list('name', flat=True)}
+    return {'administrador', 'psicologo'} & nombres
 
 
 class AdminHomeStatsView(APIView):

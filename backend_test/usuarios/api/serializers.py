@@ -31,24 +31,26 @@ class RegistrarSerializer(serializers.ModelSerializer):
         return account
     
 class RegistrarAdminSerializer(serializers.ModelSerializer):
+    role = serializers.CharField(write_only=True, required=False, allow_blank=True)
+
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['username', 'password', 'first_name', 'last_name', 'email', 'edad', 'sexo', 'role']
         extra_kwargs = {
-            'password':{ 'write_only':True}
+            'password': {'write_only': True}
         }
-        
+
     def save(self):
         if User.objects.filter(username=self.validated_data['username']).exists():
             raise serializers.ValidationError({'El ci ya existe'})
-    
+
         account = User(
-            username = self.validated_data['username'],
-            first_name = self.validated_data['first_name'],
-            last_name = self.validated_data['last_name'],
-            email = self.validated_data['email'],
-            edad = self.validated_data['edad'],
-            sexo = self.validated_data['sexo'],
+            username=self.validated_data['username'],
+            first_name=self.validated_data['first_name'],
+            last_name=self.validated_data['last_name'],
+            email=self.validated_data['email'],
+            edad=self.validated_data['edad'],
+            sexo=self.validated_data['sexo'],
         )
         account.set_password(self.validated_data['password'])
         account.save()

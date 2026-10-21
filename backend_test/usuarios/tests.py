@@ -39,7 +39,9 @@ class LoginTest(TestCase):
 class RegistrationTest(TestCase):
     def setUp(self):
         self.client = APIClient()
-        Group.objects.create(name='Administrador')
+        Group.objects.get_or_create(name='Administrador')
+        Group.objects.get_or_create(name='Psicologo')
+
     def test_registration(self):
         response = self.client.post('/accounts/registeradmin/', {
             'username': '899561244',
@@ -48,11 +50,13 @@ class RegistrationTest(TestCase):
             'last_name': 'User',
             'edad': 20,
             'sexo': 'M',
-            'email': 'testuser@example.com'
+            'email': 'testuser@example.com',
+            'role': 'Administrador'
         })
         self.assertEqual(response.status_code, 200)
 
         user = get_user_model().objects.get(username='899561244')
+        self.assertTrue(user.groups.filter(name='Administrador').exists())
 
         expected_response = {
             'response': 'Registro de usuario exitoso',
@@ -63,8 +67,27 @@ class RegistrationTest(TestCase):
             'edad': user.edad,
             'sexo': user.sexo,
             'email': user.email,
+            'role': 'Administrador',
         }
         response_data = response.json()
         response_data.pop('token', None)
 
         self.assertDictEqual(response_data, expected_response)
+
+    def test_registration_as_psicologo(self):
+        response = self.client.post('/accounts/registeradmin/', {
+            'username': '987654321',
+            'password': 'testpassword',
+            'first_name': 'Psico',
+            'last_name': 'User',
+            'edad': 25,
+            'sexo': 'F',
+            'email': 'psicologo@example.com',
+            'role': 'Psicologo'
+        })
+
+        self.assertEqual(response.status_code, 200)
+        user = get_user_model().objects.get(username='987654321')
+        self.assertTrue(user.groups.filter(name='Psicologo').exists())
+        self.assertFalse(user.groups.filter(name='Administrador').exists())
+        self.assertEqual(response.json()['role'], 'Psicologo')

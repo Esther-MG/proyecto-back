@@ -10,6 +10,30 @@ from django.contrib import auth
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 User = get_user_model()
+
+ROLE_GROUPS = {
+    'administrador': 'Administrador',
+    'admin': 'Administrador',
+    'psicologo': 'Psicologo',
+    'psicólogo': 'Psicologo',
+    'psychologist': 'Psicologo',
+}
+
+
+def normalize_role_name(role_value):
+    if role_value is None or role_value == '':
+        return 'Administrador'
+
+    normalized = str(role_value).strip().lower()
+    if normalized in ROLE_GROUPS:
+        return ROLE_GROUPS[normalized]
+
+    raise ValueError('El rol debe ser Administrador o Psicologo')
+
+
+def get_or_create_role_group(role_name):
+    return Group.objects.get_or_create(name=role_name)[0]
+
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def session_view(request):
@@ -54,6 +78,12 @@ def logout_view(request):
     if request.method == 'POST':
         request.user.auth_token.delete()
         return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def roles_view(request):
+    roles = Group.objects.exclude(name__in=['Estudiante']).order_by('name').values_list('name', flat=True)
+    return Response({'roles': list(roles)})
 
 @api_view(['POST',])
 def registration_view(request):
@@ -102,6 +132,11 @@ def registration_admin_view(request):
         serializer = RegistrarAdminSerializer(data=request.data)
         data = {}
         if serializer.is_valid():
+            try:
+                role_name = normalize_role_name(request.data.get('role'))
+            except ValueError as exc:
+                return Response({'error': str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+
             account = serializer.save()
             data['response'] = 'Registro de usuario exitoso'
             data['id']= account.id
@@ -111,9 +146,10 @@ def registration_admin_view(request):
             data['edad'] = account.edad
             data['sexo'] = account.sexo
             data['email'] = account.email
+            data['role'] = role_name
 
-            admin_group = Group.objects.get(name='Administrador')
-            admin_group.user_set.add(account)
+            role_group = get_or_create_role_group(role_name)
+            role_group.user_set.add(account)
 
             refresh = RefreshToken.for_user(account)
             data['token'] = {
@@ -137,9 +173,10 @@ def admin_login_view(request):
 
         if account is not None:
             is_admin = account.groups.filter(name='Administrador').exists()
+            is_psychologist = account.groups.filter(name='Psicologo').exists()
 
-            if not is_admin:
-                data['error'] = 'El usuario no es un administrador'
+            if not is_admin and not is_psychologist:
+                data['error'] = 'El usuario no es un administrador ni un psicólogo'
                 return Response(data, status=status.HTTP_403_FORBIDDEN)
 
             data['response'] = 'Login existoso'
@@ -147,6 +184,7 @@ def admin_login_view(request):
             data['username'] = account.username
             data['first_name'] = account.first_name
             data['last_name'] = account.last_name
+            data['role'] = 'Administrador' if is_admin else 'Psicologo'
 
             refresh = RefreshToken.for_user(account)
             data['token'] = {
@@ -170,8 +208,9 @@ def user_login_view(request):
 
             is_admin = account.groups.filter(name='Administrador').exists()
             is_student = account.groups.filter(name='Estudiante').exists()
+            is_psychologist = account.groups.filter(name='Psicologo').exists()
 
-            if not is_admin and not is_student:
+            if not is_admin and not is_student and not is_psychologist:
                 data['error'] = 'El usuario no tiene un rol asignado'
                 return Response(data, status=status.HTTP_403_FORBIDDEN)
 
@@ -186,6 +225,7 @@ def user_login_view(request):
             data['celular'] = account.celular
             data['grado_escolar'] = account.grado_escolar
             data['email'] = account.email
+            data['role'] = 'Administrador' if is_admin else 'Psicologo' if is_psychologist else 'Estudiante'
 
             refresh = RefreshToken.for_user(account)
             data['token'] = {

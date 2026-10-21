@@ -113,7 +113,7 @@ class respuesta_nuevo(models.Model):
     id_test = models.IntegerField()
     id_seccion = models.IntegerField()
     valor = models.IntegerField()
-    texto = models.CharField(max_length=200)
+    texto = models.CharField(max_length=200, blank=True, null=True)
     pregunta_id = models.ForeignKey(pregunta_nuevo, on_delete=models.CASCADE)
     usuario_id = models.ForeignKey(User, on_delete=models.CASCADE)
 

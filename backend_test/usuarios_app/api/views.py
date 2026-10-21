@@ -1,4 +1,6 @@
 from django.db.migrations import serializer
+from rest_framework.generics import ListAPIView
+
 from usuarios_app.models import (usuario, tipo_usuario, tutor, test, seccion, pregunta_sa, opcion_sa, encuesta,
 respuesta1, pregunta_ipp, opcion_ipp, respuesta2, pregunta_hspq, opcion_hspq, respuesta3, tipo_test, seccion_nuevo, pregunta_nuevo,
 opcion_nuevo, respuesta_nuevo, opcion_multiple)
@@ -165,10 +167,11 @@ class RespuestaNuevoListCreateAV(generics.ListCreateAPIView):
     queryset = respuesta_nuevo.objects.all()
     serializer_class = RespuestaNuevoSerializer
 
-class RespuestaNuevoDetailAV(generics.RetrieveUpdateDestroyAPIView):
-    queryset = respuesta_nuevo.objects.all()
+class RespuestaNuevoDetailAV(generics.ListAPIView):
     serializer_class = RespuestaNuevoSerializer
-
+    def get_queryset(self):
+        usuario_id = self.kwargs.get("usuario_id")
+        return respuesta_nuevo.objects.filter(usuario_id=usuario_id)
 
 # OpcionMultiple
 class OpcionMultipleListCreateAV(generics.ListCreateAPIView):
@@ -218,6 +221,17 @@ class TestDetailAV(APIView):
             return Response({'error': 'Test no existe'}, status=status.HTTP_404_NOT_FOUND)
         test_obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class TestPorSeccionYPreguntaView(ListAPIView):
+    serializer_class = PreguntaNuevaSerializer
+
+    def get_queryset(self):
+        seccion_id = self.kwargs.get("seccion_id")
+        nro_pregunta = self.kwargs.get("nro_pregunta")
+        return pregunta_nuevo.objects.filter(
+            seccion_id=seccion_id,
+            nro_pregunta=nro_pregunta
+        ).order_by("nro_pregunta", "id")
 
 class SeccionView(APIView):
     def get(self, request):

@@ -5,6 +5,7 @@
       <set>
         <option value="$PROJECT_DIR$/venv/Lib/site-packages" />
         <option value="$PROJECT_DIR$/backend_test" />
+        <option value="$PROJECT_DIR$" />
       </set>
     </option>
   </component>
