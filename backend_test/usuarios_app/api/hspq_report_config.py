@@ -1,7 +1,7 @@
 FACTOR_ORDER = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'O', 'Q2', 'Q3', 'Q4']
 
 # Grupos autorizados a consultar el informe de otro usuario (ademas del propio estudiante).
-REPORT_VIEWER_GROUPS = ['Administrador']
+REPORT_VIEWER_GROUPS = ['Administrador', 'Psicologo']
 
 DECATIPO_SOURCE_NOTE = (
     "Decatipos calculados con las funciones convert_section_* de usuarios_app/api/views.py "

@@ -1,7 +1,7 @@
 # IPP original, 17 campos. La conversión del sistema no trae fuente, edad ni grupo.
 
 IPP_TEST_ID = 2
-REPORT_VIEWER_GROUPS = ['Administrador']
+REPORT_VIEWER_GROUPS = ['Administrador', 'Psicologo']
 ESCALA_VERIFICADA_COMO_PERCENTIL = False
 TRANSFORMED_LABEL = 'Puntuación transformada'
 

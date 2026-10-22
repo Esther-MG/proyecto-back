@@ -3,7 +3,7 @@
 # Un guion de la imagen no se rellena ni se interpola.
 
 DAT_TEST_ID = 1
-REPORT_VIEWER_GROUPS = ['Administrador']
+REPORT_VIEWER_GROUPS = ['Administrador', 'Psicologo']
 
 BAREMO_FUENTE = 'Plantilla de Baremos escolares'
 BAREMO_NOTA_SEXO = (
