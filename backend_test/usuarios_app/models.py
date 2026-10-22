@@ -218,3 +218,31 @@ class respuesta3(models.Model):
     opcion_id = models.ForeignKey(opcion_hspq, on_delete=models.CASCADE)
     def __str__(self):
         return str(self.usuario_id)
+
+
+class FinalizacionTestPrincipal(models.Model):
+    TEST_DAT = 'DAT'
+    TEST_IPP = 'IPP'
+    TEST_HSPQ = 'HSPQ'
+
+    TEST_CHOICES = (
+        (TEST_DAT, 'DAT'),
+        (TEST_IPP, 'IPP'),
+        (TEST_HSPQ, 'HSPQ'),
+    )
+
+    estudiante = models.ForeignKey(User, on_delete=models.CASCADE)
+    test_principal = models.CharField(max_length=10, choices=TEST_CHOICES)
+    fecha_finalizacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'finalizacion_test_principal'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['estudiante', 'test_principal'],
+                name='uniq_finalizacion_estudiante_test',
+            )
+        ]
+
+    def __str__(self):
+        return f'{self.estudiante_id}-{self.test_principal}'
