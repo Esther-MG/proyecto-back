@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from usuarios.models import User
+from usuarios_app.models import test
 from usuarios_app.api.hspq_report import HspqReportJWTAuthentication
 from usuarios_app.api.hspq_report_config import REPORT_VIEWER_GROUPS
 
@@ -38,7 +39,7 @@ def build_admin_home_stats():
         'total_estudiantes': contar_usuarios_en_grupo(GRUPO_ESTUDIANTE),
         'total_administradores': contar_usuarios_en_grupo(GRUPO_ADMINISTRADOR),
         'total_psicologos': contar_usuarios_en_grupo(GRUPO_PSICOLOGO),
-        'total_tests_configurados': TESTS_FIJOS + contar_tests_genericos(),
+        'total_tests_configurados': test.objects.count(),
     }
 
 
