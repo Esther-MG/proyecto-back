@@ -26,6 +26,21 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
+        extra_kwargs = {
+            'password': {
+                'write_only': True,
+                'required': False,
+                'allow_blank': True,
+            }
+        }
+
+    def update(self, instance, validated_data):
+        raw_password = validated_data.pop('password', None)
+        instance = super().update(instance, validated_data)
+        if raw_password is not None and raw_password != '':
+            instance.set_password(raw_password)
+            instance.save(update_fields=['password'])
+        return instance
         
 class GroupsSerializer(serializers.ModelSerializer):
     class Meta:
